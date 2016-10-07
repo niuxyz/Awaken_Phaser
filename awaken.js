@@ -39,14 +39,17 @@ var g_body;
 var isSpacebarActivited;
 var isLKeyActivited;
 var isBKeyActivited;
+var isRKeyActivited;
 var timer = 0;
 var timerDuration = 180;
+var isAnimationHeartPlay;
 var counterHeart;
 var counterLung;
 var counterBlood;
 var gameState;
 var breathAudio;
 var heartAudio;
+var bloodAudio;
 
 var GameState = {
 	Menu :  {value: 0, name: "Menu"},
@@ -63,6 +66,7 @@ var GameState = {
  	game.load.spritesheet('ui02', 'asset/Lkey2.png', 50, 40);
 	game.load.spritesheet('lung','asset/lung_animation7.png', 500, 500);
 	game.load.spritesheet('ui03', 'asset/Bkey1.png', 50, 40);
+	game.load.spritesheet('ui03', 'asset/Rkey1.png', 50, 40);
 	game.load.spritesheet('back','asset/background4.png', 580,880);
 	game.load.spritesheet('bloodstrikeSprite','asset/blood5.png', 500,590);
 	game.load.spritesheet('logo','asset/logo.png', 70,290);
@@ -72,6 +76,7 @@ var GameState = {
 
     game.load.audio('HeartbeatSound', 'asset/heart.wav');
     game.load.audio('breathingSound', 'asset/breathing1.wav');
+    game.load.audio('bloodSound', 'asset/blood.wav');
 
 
   }
@@ -85,6 +90,8 @@ var GameState = {
   	counterLung = 0;
   	counterBlood = 0;
 	
+	isAnimationHeartPlay = false;
+
 	background = game.add.tileSprite(0,0,580,880,'back');
 
 	g_lung = game.add.group();
@@ -123,7 +130,7 @@ var GameState = {
 	bodymovement.animations.add('bodybreath',null,6,false);
 	bodymovement.alpha = 0;
 
-	heartAudio = game.add.audio('HeartbeatSound');
+	
 
 	spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
@@ -134,6 +141,8 @@ var GameState = {
 	//Lkey.onDown.add(secondstep);
 
 	Bkey = game.input.keyboard.addKey(Phaser.Keyboard.B);
+
+
 	//Bkey.onDown.add(thirdstep);
 
 	lungbreath.bringToTop();
@@ -155,11 +164,17 @@ var GameState = {
 	ui03.anchor.x = .5;
 	ui03.anchor.y = 0;
 	ui03.alpha = 0;
+	
+
+	ui04 = game.add.sprite(250, game.height/2,'ui04');
+	ui04.anchor.x = .5;
+	ui04.anchor.y = 0;
+	ui04.alpha = 0;
 
 
 	breathAudio = game.add.audio('breathingSound');
 	heartAudio = game.add.audio('HeartbeatSound');
-
+	bloodAudio = game.add.audio('bloodSound');
 
 }
 
@@ -173,6 +188,11 @@ function ResetLKey(){
 
 function ResetBKey(){
 	isBKeyActivited = true;
+}
+
+function ResetRKey(){
+	isReysActivited = true;
+
 }
 
 function update(){
@@ -199,7 +219,8 @@ function update(){
 			firststep();
 			timer = timerDuration;
 			isSpacebarActivited = true;
-			game.time.events.add(Phaser.Timer.SECOND * 0.5, ResetSpacebar, this);
+
+			game.time.events.add(Phaser.Timer.SECOND * 1.2, ResetSpacebar, this);
 			heartAudio.play();
 
 			counterHeart += 1;
@@ -207,7 +228,6 @@ function update(){
 				ui02.alpha = 1;
 				isLKeyActivited = true;
 			}
-
 		}
 
 
@@ -215,7 +235,7 @@ function update(){
 			isLKeyActivited = false;
 			breathAudio.play()
 			secondstep();
-			game.time.events.add(Phaser.Timer.SECOND * 0.5, ResetLKey, this);
+			game.time.events.add(Phaser.Timer.SECOND * 2, ResetLKey, this);
 			breathAudio.play()
 			counterLung += 1;
 			if(counterLung == 3){
@@ -226,13 +246,28 @@ function update(){
 		}
 		if(isBKeyActivited == true && Bkey.isDown){
 			isBKeyActivited = false;
+			bloodAudio.play()
 			thirdstep();
-			game.time.events.add(Phaser.Timer.SECOND * 0.5, ResetBKey, this);
-			breathingAudio.play();
+			game.time.events.add(Phaser.Timer.SECOND * 1, ResetBKey, this);
+			bloodAudio.play();
 
 			counterBlood +=1;
 			console.log(counterBlood);
 			if(counterBlood == 8){
+
+				ui04.alpha =1;
+				isRKeyActivited = true;}
+			}
+
+		if(isReyActivited == true && Rkey.isDown){
+			isRkeyActivited == false;
+			fourthstep();
+			game.time.events.add(Phaser.Timer.SECOND * 1, ResetRKey, this);
+
+
+			counterbody +=1;
+			if(counterbody == 5){
+
 				gameState = GameState.Endstage;
 				
 				game.add.tween(laststage).to( { alpha: 1 }, 1000, Phaser.Easing.Linear.None, true, 0, 0, false);
@@ -246,38 +281,13 @@ function update(){
 			gameState = GameState.End;
 		}
 
-	}else if(gameState == GameState.End){
+	else if(gameState == GameState.End){
 		game.state.restart();
 	}
 
-	if(gameState == GameState.Endstage){	
+	if(gameState == GameState.Endstage){
 
-
-
-	}
-
-
-
-	// counterheart ++ ;
-	// if (counterheart > 150){
-	// 	ui01.alpha= 1;
-	// 	lungActivated = false;
-	// 	bodyActivated = false;
-	// 	game.add.tween(bloodstrike).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true, 0, 0, false);
-	// 	counterlung = 0;
-	// 	counter01 = 0;
-	// 	counter02 = 0;
-	// }
-
-	// counterlung ++ ;
-	// if(counterlung > 150 && lungActivated){
-	// 	ui02.alpha =1;
-	// 	bodyActivated = false;
-	// 	counter02 = 0;
-
-	// }
-
-
+}
 }
 	function firststep(){
 		heartbeat.animations.play('heart'); 
@@ -305,18 +315,19 @@ function update(){
 		counterLung = 0;
 	}
 
-	// function fourthstep(){
+	function fourthstep()
+	{
 
-	// 	if(bodymovement.alpha == 0){
-	// 		game.add.tween(bodymovement).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
-	// 	}
-	// 	bodymovement.animations.play('bodybreath');
+	if(bodymovement.alpha == 0){
+		game.add.tween(bodymovement).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
+	 	}
+	 	bodymovement.animations.play('bodybreath');
 		
-	// 	counterBlood = 0;
+	 	counterBlood = 0;
 
 
+}
 
-	// }
 
 function render(){
 
