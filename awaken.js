@@ -279,54 +279,52 @@ function update(){
 		timer -= 1;
 		if(timer <= 0){
 			gameState = GameState.End;
-		}
-
+	}
 	else if(gameState == GameState.End){
 		game.state.restart();
 	}
 
 	if(gameState == GameState.Endstage){
 
+	}
 }
 }
-	function firststep(){
-		heartbeat.animations.play('heart'); 
-		ui01.alpha= 0;
-		counterheart = 0;
+
+function firststep(){
+	heartbeat.animations.play('heart'); 
+	ui01.alpha= 0;
+	counterheart = 0;
+}
+
+
+function secondstep(){
+// if (lungActivated) {
+	if(lungbreath.alpha == 0){
+		game.add.tween(lungbreath).to({alpha:1}, 2000, Phaser.Easing.Linear.None, true, 0,0, false);
 	}
+	lungbreath.animations.play('lung'); 
+	ui02.kill();
+}
 
-	
-	function secondstep(){
-	// if (lungActivated) {
-		if(lungbreath.alpha == 0){
-			game.add.tween(lungbreath).to({alpha:1}, 2000, Phaser.Easing.Linear.None, true, 0,0, false);
-		}
-		lungbreath.animations.play('lung'); 
-		ui02.kill();
+function thirdstep()
+{
+	if(bloodstrike.alpha == 0){
+		game.add.tween(bloodstrike).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true, 0,0, false);
 	}
+	bloodstrike.animations.play('bloodstrikeSprite'); 
+	ui03.alpha= 0;
+	counterLung = 0;
+}
 
-	function thirdstep()
-	{
-		if(bloodstrike.alpha == 0){
-			game.add.tween(bloodstrike).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true, 0,0, false);
-		}
-		bloodstrike.animations.play('bloodstrikeSprite'); 
-		ui03.alpha= 0;
-		counterLung = 0;
-	}
-
-	function fourthstep()
-	{
-
+function fourthstep()
+{
 	if(bodymovement.alpha == 0){
 		game.add.tween(bodymovement).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
-	 	}
-	 	bodymovement.animations.play('bodybreath');
-		
-	 	counterBlood = 0;
-
-
+	}
+ 	bodymovement.animations.play('bodybreath');
+ 	counterBlood = 0;
 }
+
 
 
 function render(){
