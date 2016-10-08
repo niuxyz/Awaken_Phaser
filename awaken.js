@@ -57,6 +57,7 @@ var heartAudio;
 var bloodAudio;
 //other
 var background;
+var background2;
 var gameState;
 
 
@@ -78,13 +79,15 @@ var GameState = {
 	game.load.spritesheet('ui_restart', 'asset/Rkey1.png', 50, 40);
 	game.load.spritesheet('ui_last', 'asset/UI_last.png', 440, 60);
 	game.load.spritesheet('back','asset/background4.png', 580,880);
+	game.load.spritesheet('back2','asset/background2.png', 580,880);
+
 	game.load.spritesheet('bloodstrikeSprite','asset/blood5.png', 480,566);
 	game.load.spritesheet('logotitle','asset/logo.png', 70,290);
-    game.load.spritesheet('laststageSprite','asset/laststage2.png', 580,855);
-    game.load.spritesheet('ui_helathBar', 'asset/healthBar.png', 300, 10);
+    game.load.spritesheet('laststageSprite','asset/laststage6.png', 550,880);
+    game.load.spritesheet('ui_helathBar', 'asset/healthBar2.png', 300, 10);
    //sound
-    game.load.audio('HeartbeatSound', 'asset/heart.wav');
-    game.load.audio('breathingSound', 'asset/breathing1.wav');
+    game.load.audio('HeartbeatSound', 'asset/heart2.wav');
+    game.load.audio('breathingSound', 'asset/breathing2.wav');
     game.load.audio('bloodSound', 'asset/blood.wav');
 
 
@@ -102,6 +105,9 @@ var GameState = {
 	isAnimationHeartPlay = false;
 
 	background = game.add.tileSprite(0,0,580,880,'back');
+	background2 = game.add.tileSprite(0,0,580,880,'back2');
+	background2.alpha = 0;
+
 
 	g_lung = game.add.group();
 	g_blood = game.add.group();
@@ -123,13 +129,15 @@ var GameState = {
 	laststage = g_last.create(280, 440, 'laststageSprite');
 	laststage.anchor.x= .5;
 	laststage.anchor.y= .5;
-	laststage.animations.add('laststageSprite',null,4,false);
+	laststage.animations.add('laststageSprite',null,12,false);
 	laststage.alpha = 0;
+
+
 
 	lungbreath = g_lung.create(game.width/2 - 10, game.height/2 + 200, 'lung');
 	lungbreath.anchor.x= .5;
 	lungbreath.anchor.y= .5;
-	lungbreath.animations.add('lung',null,6,false);
+	lungbreath.animations.add('lung',null,9,false);
 	lungbreath.alpha = 0;
 
 
@@ -213,7 +221,7 @@ function update(){
 			timer = timerDuration;
 			isSpacebarActivited = true;
 			//====================== 先禁止spacebar， 1.2秒后重置 spacebar, 让spacebar 处于可以被检测的状态, 不这么做的话，按下spacebar的一瞬间，会运行多次这个function ====================
-			game.time.events.add(Phaser.Timer.SECOND * 1.2, ResetSpacebar, this);
+			game.time.events.add(Phaser.Timer.SECOND * 1.5, ResetSpacebar, this);
 			heartAudio.play();
 
 
@@ -310,17 +318,23 @@ function thirdstep()
 
 // =================================== Fade In / Fade Out  1000 = 1s  ============================================
 	gameState = GameState.Endstage;
+	game.add.tween(ui_helathBarEmpty).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0,false);
+	game.add.tween(ui_helathBar).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0,false);
+
  	game.add.tween(lungbreath).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(bloodstrike).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(heartbeat).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	
 //==============================================last stage stuff=========================================
 
- 	endScreen = game.add.tween(laststage).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
+	game.add.tween(laststage).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(logo).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
+ 	game.add.tween(background2).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
+ 
+
+
  	
 }
-
 
 function render(){
 
