@@ -180,7 +180,9 @@ var GameState = {
 	ui_last.anchor.y = .5;
 	ui_last.alpha = 0;
 
-	logo = game.add.sprite(250, game.height/2, 'logotitle');
+	logo = game.add.sprite(gmae.width/2, game.height/2, 'logotitle');
+	logo.anchor.x = .5;
+	logo.anchor.y = .5;
 	logo.alpha = 0;
 
 	breathAudio = game.add.audio('breathingSound');
