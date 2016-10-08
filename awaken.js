@@ -9,7 +9,6 @@ var ui01;
 var ui02;
 var ui03;
 var ui_restart;
-var ui_last;
 // var counterheart; //counts amount of time passed inbetween heart beats
 // var lungbreath; 
 
@@ -21,10 +20,9 @@ var ui_last;
 // var counterBody;
 // var bodyActivated;
 
-var background;
 var bloodstrike;
-var bodymovement;
-var bodybreath;
+// var bodymovement;
+// var bodybreath;
 var laststage;
 var logo;
 var laststageSprite;
@@ -32,27 +30,33 @@ var laststageSprite;
 var spacebar;
 var Lkey;
 var Bkey;
-var Akey;
 var Rkey;
+//group
 var g_heart;
 var g_lung;
 var g_blood;
 var g_last;
-var g_body;
+// var g_body;
+//update
 var isSpacebarActivited;
 var isLKeyActivited;
 var isBKeyActivited;
-var isAKeyActivited;
+var isAnimationHeartPlay;
+//time
 var timer = 0;
 var timerDuration = 180;
-var isAnimationHeartPlay;
+//counter
 var counterHeart;
 var counterLung;
 var counterBlood;
-var gameState;
+//audio
 var breathAudio;
 var heartAudio;
 var bloodAudio;
+//other
+var background;
+var gameState;
+
 
 var GameState = {
 	Menu :  {value: 0, name: "Menu"},
@@ -75,9 +79,7 @@ var GameState = {
 	game.load.spritesheet('bloodstrikeSprite','asset/blood5.png', 480,566);
 	game.load.spritesheet('logotitle','asset/logo.png', 70,290);
     game.load.spritesheet('laststageSprite','asset/laststage2.png', 580,855);
-    game.load.spritesheet('bodybreath','asset/breathingcycle.png', 580,880);
-//sound
-
+   //sound
     game.load.audio('HeartbeatSound', 'asset/heart.wav');
     game.load.audio('breathingSound', 'asset/breathing1.wav');
     game.load.audio('bloodSound', 'asset/blood.wav');
@@ -90,8 +92,7 @@ var GameState = {
  	
  	timer = timerDuration;
   	isSpacebarActivited = false;
-  	isAKeyActivited = false;
-  	counterHeart = 0;
+   	counterHeart = 0;
   	counterLung = 0;
   	counterBlood = 0;
 	counterbody = 0;
@@ -102,7 +103,6 @@ var GameState = {
 	g_lung = game.add.group();
 	g_blood = game.add.group();
 	g_heart = game.add.group();
-	g_body = game.add.group();
 	g_last = game.add.group();
 
 
@@ -129,58 +129,36 @@ var GameState = {
 	lungbreath.animations.add('lung',null,6,false);
 	lungbreath.alpha = 0;
 
-	bodymovement = g_body.create(300, 400, 'bodybreath');
-	bodymovement.anchor.x= .5;
-	bodymovement.anchor.y= .5;
-	bodymovement.animations.add('bodybreath',null,6,false);
-	bodymovement.alpha = 0;
 
 	
 	spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-	//spacebar.onDown.add(firststep);
-
-	//insert key
 	Lkey = game.input.keyboard.addKey(Phaser.Keyboard.L);
-	//Lkey.onDown.add(secondstep);
-
 	Bkey = game.input.keyboard.addKey(Phaser.Keyboard.B);
-	Akey = game.input.keyboard.addKey(Phaser.Keyboard.A);
 	Rkey = game.input.keyboard.addKey(Phaser.Keyboard.R);
-	//Bkey.onDown.add(thirdstep);
-
-	lungbreath.bringToTop();
-	heartbeat.bringToTop();
+	
 
 	ui01 = game.add.sprite(game.width/2, game.height/2 + 380,'ui01');
 	ui01.anchor.x = .5;
 	ui01.anchor.y = 0;
 	ui01.alpha = 1;
 
-
 	ui02 = game.add.sprite(470, game.height/2 + 40,'ui02');
 	ui02.anchor.x = .5;
 	ui02.anchor.y = 0;
 	ui02.alpha = 0;
-
 
 	ui03 = game.add.sprite(250, game.height/2 - 100,'ui03');
 	ui03.anchor.x = .5;
 	ui03.anchor.y = 0;
 	ui03.alpha = 0;
 	
-
 	ui_restart = game.add.sprite(250, game.height/2,'ui_restart');
 	ui_restart.anchor.x = .5;
 	ui_restart.anchor.y = 0;
 	ui_restart.alpha = 0;
 
-	ui_last = game.add.sprite(250, game.height/2, 'ui_last');
-	ui_last.anchor.x = .5;
-	ui_last.anchor.y = .5;
-	ui_last.alpha = 0;
-
-	logo = game.add.sprite(gmae.width/2, game.height/2, 'logotitle');
+	logo = game.add.sprite(game.width/2, game.height/2, 'logotitle');
 	logo.anchor.x = .5;
 	logo.anchor.y = .5;
 	logo.alpha = 0;
@@ -199,10 +177,6 @@ function ResetLKey(){
 }
 function ResetBKey(){
 	isBKeyActivited = true;
-}
-
-function ResetAKey(){
-	isAKeyActivited = true;
 }
 
 function update(){
@@ -255,7 +229,6 @@ function update(){
 			}
 		}
 		if(isBKeyActivited == true && Bkey.isDown){
-			ui_last.alpha = 0;
 			isBKeyActivited = false;
 			bloodAudio.play()
 			thirdstep();
@@ -265,29 +238,8 @@ function update(){
 			counterBlood +=1;
 			if(counterBlood == 2){
 				console.log(counterBlood);
-				counterBlood = -1000;
-				ui_last.alpha = 1;
-				// ui04.alpha =1;
-				isAKeyActivited = true;
-			}
-		}
-
-		if(isAKeyActivited == true && Akey.isDown && Lkey.isDown && spacebar.isDown && Bkey.isDown){
-			//ui_last = false;
-			console.log("111111111111");
-			isAKeyActivited == false;
-			ui_last.alpha = 0;
-			game.time.events.add(Phaser.Timer.SECOND * 1, ResetAKey, this);
-			fourthstep();
-			counterbody +=1;
-			if(counterbody == 4){
-				isAKeyActivited == false;
-				gameState = GameState.Endstage;
-				ShowEndPage();
-				// game.add.tween(laststage).to( { alpha: 1 }, 1000, Phaser.Easing.Linear.None, true, 0, 0, false);
-				// laststage.animations.play('laststageSprite'); 
-			}
-
+			game.time.events.add(Phaser.Timer.SECOND * 1, OnEndScreen, this);
+				}
 		}
 
 		timer -= 1;
@@ -312,7 +264,7 @@ function firststep(){
 
 
 function secondstep(){
-// if (lungActivated) {
+
 	if(lungbreath.alpha == 0){
 		game.add.tween(lungbreath).to({alpha:1}, 2000, Phaser.Easing.Linear.None, true, 0,0, false);
 	}
@@ -328,27 +280,22 @@ function thirdstep()
 	bloodstrike.animations.play('bloodstrikeSprite'); 
 	ui03.alpha= 0;
 	counterLung = 0;
+	gameState = GameState.Endpage;
+
 }
 
-function fourthstep()
-{
-	// if(bodymovement.alpha == 0){
-	// 	game.add.tween(bodymovement).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
-	// }
- 	bodymovement.animations.play('bodybreath');
- 	counterBlood = 0;
-}
+ function OnEndpage (){   
+        
 
-function ShowEndPage(){
 // =================================== Fade In / Fade Out  1000 = 1s  ============================================
-	gameState = GameState.Endstage;
+	gameState = GameState.Endpage;
  	game.add.tween(lungbreath).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(bloodstrike).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(heartbeat).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
- 	game.add.tween(bodymovement).to({alpha:1}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	
+//==============================================last stage stuff=========================================
 
- 	game.add.tween(laststage).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
+ 	endScreen = game.add.tween(laststage).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(logo).to({alpha:1}, 5000, Phaser.Easing.Linear.None, true,0,0, false);
  	
 }
