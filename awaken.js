@@ -9,6 +9,8 @@ var ui01;
 var ui02;
 var ui03;
 var ui_restart;
+var ui_helathBar;
+var ui_helathBarEmpty;
 // var counterheart; //counts amount of time passed inbetween heart beats
 // var lungbreath; 
 
@@ -79,6 +81,7 @@ var GameState = {
 	game.load.spritesheet('bloodstrikeSprite','asset/blood5.png', 480,566);
 	game.load.spritesheet('logotitle','asset/logo.png', 70,290);
     game.load.spritesheet('laststageSprite','asset/laststage2.png', 580,855);
+    game.load.spritesheet('ui_helathBar', 'asset/healthBar.png', 300, 10);
    //sound
     game.load.audio('HeartbeatSound', 'asset/heart.wav');
     game.load.audio('breathingSound', 'asset/breathing1.wav');
@@ -158,6 +161,12 @@ var GameState = {
 	ui_restart.anchor.y = 0;
 	ui_restart.alpha = 0;
 
+	
+	ui_helathBarEmpty = game.add.sprite(120, 150,'ui_helathBar');
+	ui_helathBarEmpty.frame = 1;
+	ui_helathBar = game.add.sprite(120, 150,'ui_helathBar');
+	//ui_helathBar.width *= 0.4;
+
 	logo = game.add.sprite(game.width/2, game.height/2, 'logotitle');
 	logo.anchor.x = .5;
 	logo.anchor.y = .5;
@@ -198,51 +207,63 @@ function update(){
 		}
 
 	}else if(gameState == GameState.Run){
+		//假如spacebar是可以被检测的状态， 同时按下了 spacebar, 运行以下function
 		if(isSpacebarActivited != true && spacebar.isDown){
 			firststep();
 			timer = timerDuration;
 			isSpacebarActivited = true;
-
+			//====================== 先禁止spacebar， 1.2秒后重置 spacebar, 让spacebar 处于可以被检测的状态, 不这么做的话，按下spacebar的一瞬间，会运行多次这个function ====================
 			game.time.events.add(Phaser.Timer.SECOND * 1.2, ResetSpacebar, this);
 			heartAudio.play();
 
+
 			counterHeart += 1;
 			if(counterHeart == 3){
+				//======================= 按了spacebar 3次时, 启用L key ================
 				counterHeart = -1000;
 				ui02.alpha = 1;
 				isLKeyActivited = true;
 			}
 		}
 
-
+		//假如L key是可以被检测的状态， 同时按下了 L key, 运行以下function
 		if(isLKeyActivited == true && Lkey.isDown){
-			isLKeyActivited = false;
+			
 			breathAudio.play()
 			secondstep();
+			//====================== 1秒后重置 L key, 让L key 处于可以被检测的状态, 不这么做的话，按下L key的一瞬间，会运行多次这个function ====================
+			isLKeyActivited = false;
 			game.time.events.add(Phaser.Timer.SECOND * 2, ResetLKey, this);
 			breathAudio.play()
 			counterLung += 1;
-			if(counterLung == 3){
+			if(counterLung == 2){
+				//======================= 按了L key 2次时, 启用B key ================
 				counterLung = -1000;
 				ui03.alpha = 1;
 				isBKeyActivited = true;
 			}
 		}
+
+		//假如B key是可以被检测的状态， 同时按下了 B key, 运行以下function
 		if(isBKeyActivited == true && Bkey.isDown){
-			isBKeyActivited = false;
-			bloodAudio.play()
+			
+			bloodAudio.play();
 			thirdstep();
+
+			//====================== 1秒后重置 B key, 让B key 处于可以被检测的状态, 不这么做的话，按下B key的一瞬间，会运行多次这个function ====================
+			isBKeyActivited = false;
 			game.time.events.add(Phaser.Timer.SECOND * 1, ResetBKey, this);
 			bloodAudio.play();
 
 			counterBlood +=1;
 			if(counterBlood == 2){
-				console.log(counterBlood);
-			game.time.events.add(Phaser.Timer.SECOND * 1, OnEndScreen, this);
-				}
+				//======================= 按了b键两次时 运行 OnEndPage Function， fadein Endscreen ================
+				OnEndPage();
+			}
 		}
 
 		timer -= 1;
+		ui_helathBar.width = timer / timerDuration * 300; 
 		if(timer <= 0){
 			gameState = GameState.End;
 		}
@@ -255,14 +276,14 @@ function update(){
 
 	}
 }
-
+//========================= 每一次按 spacebar 都会运行这个function ================
 function firststep(){
 	heartbeat.animations.play('heart'); 
 	ui01.alpha= 0;
 	counterheart = 0;
 }
 
-
+//========================= 每一次按A key 都会运行这个function ================
 function secondstep(){
 
 	if(lungbreath.alpha == 0){
@@ -271,7 +292,7 @@ function secondstep(){
 	lungbreath.animations.play('lung'); 
 	ui02.kill();
 }
-
+//========================= 每一次按B key 都会运行这个function ================
 function thirdstep()
 {
 	if(bloodstrike.alpha == 0){
@@ -280,15 +301,15 @@ function thirdstep()
 	bloodstrike.animations.play('bloodstrikeSprite'); 
 	ui03.alpha= 0;
 	counterLung = 0;
-	gameState = GameState.Endpage;
 
 }
-
- function OnEndpage (){   
+	
+//========================= 游戏结束后运行这个function, 所有结束面板相关的写这里 ================
+ function OnEndPage (){   
         
 
 // =================================== Fade In / Fade Out  1000 = 1s  ============================================
-	gameState = GameState.Endpage;
+	gameState = GameState.Endstage;
  	game.add.tween(lungbreath).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(bloodstrike).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
  	game.add.tween(heartbeat).to({alpha:0}, 1000, Phaser.Easing.Linear.None, true,0,0, false);
