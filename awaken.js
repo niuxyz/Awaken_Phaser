@@ -9,8 +9,14 @@ var ui01;
 var ui02;
 var ui03;
 var restart_button;
-var ui_helathBar;
-var ui_helathBarEmpty;
+var ui_healathBar;
+var ui_healthBarEmpty;
+
+var ui_healthBarLung;
+var ui_healthBarEmptyLung;
+
+var ui_healthBarBlood;
+var ui_healthBarEmptyBlood;
 // var counterheart; //counts amount of time passed inbetween heart beats
 // var lungbreath; 
 
@@ -47,7 +53,13 @@ var isBKeyActivited;
 var isAnimationHeartPlay;
 //time
 var timer = 0;
+var timerLung = 0;
+var timerBlood = 0;
 var timerDuration = 180;
+var isTimerLung;
+var isTimerBlood;
+
+
 //counter
 var counterHeart;
 var counterLung;
@@ -86,7 +98,9 @@ var GameState = {
 	game.load.spritesheet('bloodstrikeSprite','asset/blood6.png', 480,566);
 	game.load.spritesheet('logotitle','asset/logo.png', 70,290);
     game.load.spritesheet('laststageSprite','asset/laststage7.png', 580,880);
-    game.load.spritesheet('ui_helathBar', 'asset/healthBar4.png', 300, 15);
+    game.load.spritesheet('ui_healthBar', 'asset/healthBar4.png', 300, 15);
+    game.load.spritesheet('ui_healthBarLung', 'asset/healthBarLung.png', 300, 15);
+    game.load.spritesheet('ui_healthBarBlood', 'asset/healthBarBlood.png', 300, 15);
    //sound
     game.load.audio('HeartbeatSound', 'asset/heart2.wav');
     game.load.audio('breathingSound', 'asset/breathing2.wav');
@@ -101,6 +115,8 @@ var GameState = {
   	gameState = GameState.Wait;
  	
  	timer = timerDuration;
+ 	timerLung = timerDuration;
+ 	timerBlood = timerDuration;
   	isSpacebarActivited = false;
    	counterHeart = 0;
   	counterLung = 0;
@@ -136,7 +152,6 @@ var GameState = {
 	laststage.anchor.y= .5;
 	laststage.animations.add('laststageSprite',null,12,false);
 	laststage.alpha = 0;
-
 
 
 	lungbreath = g_lung.create(game.width/2 - 10, game.height/2 + 200, 'lung');
@@ -175,10 +190,21 @@ var GameState = {
 	restart_button.anchor.y = 0;
 	restart_button.alpha = 0;
 
+	//Trigger
+	isTimerLung = false;
+	isTimerBlood = false;
 
-	ui_helathBarEmpty = game.add.sprite(120, 150,'ui_helathBar');
-	ui_helathBarEmpty.frame = 1;
-	ui_helathBar = game.add.sprite(120, 150,'ui_helathBar');
+	ui_healthBarEmpty = game.add.sprite(120, 150,'ui_healthBar');
+	ui_healthBarEmpty.frame = 1;
+	ui_healthBar = game.add.sprite(120, 150,'ui_healthBar');
+
+	ui_healthBarEmptyLung = game.add.sprite(120, 170,'ui_healthBarLung');
+	ui_healthBarEmptyLung.frame = 1;
+	ui_healthBarLung = game.add.sprite(120, 170,'ui_healthBarLung');
+
+	ui_healthBarEmptyBlood = game.add.sprite(120, 190,'ui_healthBarBlood');
+	ui_healthBarEmptyBlood.frame = 1;
+	ui_healthBarBlood = game.add.sprite(120, 190,'ui_healthBarBlood');
 	//ui_helathBar.width *= 0.4;
 
 	logo = game.add.sprite(game.width/2, game.height/2 + 100, 'logotitle');
@@ -244,6 +270,7 @@ function update(){
 				counterHeart = -1000;
 				ui02.alpha = 1;
 				isLKeyActivited = true;
+				isTimerLung = true;
 			}
 		}
 
@@ -252,6 +279,7 @@ function update(){
 			
 			breathAudio.play()
 			secondstep();
+			timerLung = timerDuration;
 			//====================== 1秒后重置 L key, 让L key 处于可以被检测的状态, 不这么做的话，按下L key的一瞬间，会运行多次这个function ====================
 			isLKeyActivited = false;
 			game.time.events.add(Phaser.Timer.SECOND * 2, ResetLKey, this);
@@ -262,6 +290,7 @@ function update(){
 				counterLung = -1000;
 				ui03.alpha = 1;
 				isBKeyActivited = true;
+				isTimerBlood = true;
 			}
 		}
 
@@ -270,7 +299,7 @@ function update(){
 			
 			bloodAudio.play();
 			thirdstep();
-
+			timerBlood = timerDuration;
 			//====================== 1秒后重置 B key, 让B key 处于可以被检测的状态, 不这么做的话，按下B key的一瞬间，会运行多次这个function ====================
 			isBKeyActivited = false;
 			game.time.events.add(Phaser.Timer.SECOND * 1, ResetBKey, this);
@@ -284,10 +313,30 @@ function update(){
 		}
 
 		timer -= 0.8;
-		ui_helathBar.width = timer / timerDuration * 300; 
+		ui_healthBar.width = timer / timerDuration * 300; 
 		if(timer <= 0){
 			gameState = GameState.End;
 		}
+
+		//出发Lung以后才开始减少bar
+		if(isTimerLung){
+			timerLung -= 0.8;
+			ui_healthBarLung.width = timerLung / timerDuration * 300;
+			if(timerLung <= 0){
+				gameState = GameState.End;
+			}
+		}
+		//出发Blood以后才开始减少bar
+		if(isTimerBlood){
+			timerBlood -= 0.8;
+			ui_healthBarBlood.width = timerBlood / timerDuration * 300;
+			if(timerBlood <= 0){
+				gameState = GameState.End;
+			} 
+		}
+
+
+
 	}
 	else if(gameState == GameState.End){
 		game.state.restart();
